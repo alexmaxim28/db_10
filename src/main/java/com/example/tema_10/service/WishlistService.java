@@ -9,6 +9,7 @@ import com.example.tema_10.repository.WishlistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,26 +19,38 @@ public class WishlistService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
-    public Wishlist getWishlistById(Long id) { return wishlistRepository.getById(id); }
+    public Wishlist getWishlistById(Long userId) {
+        if (wishlistRepository.findWishlistByUserId(userId) != null)
+            return wishlistRepository.findWishlistByUserId(userId);
+        return null;
+    }
 
-    public List<Wishlist> getAllWishlists() { return wishlistRepository.findAll(); }
+    public List<Wishlist> getAllWishlists() {
+        return wishlistRepository.findAll();
+    }
 
-    public void addWishlist(Wishlist wishlist) { wishlistRepository.save(wishlist); }
+    public void addWishlist(Wishlist wishlist) {
+        wishlistRepository.save(wishlist);
+    }
 
-    public void deleteWishlist(Long id) { wishlistRepository.delete(getWishlistById(id)); }
+    public Wishlist deleteWishlist(Long id) {
+       Wishlist wishlist = wishlistRepository.getById(id);
+       wishlist.setProdInWishlist(new ArrayList<>());
+       return wishlist;
+    }
 
     public Wishlist addProductInWishlist(Long idUser, Long idProduct){
-        Product p = productRepository.getById(idProduct);
-        User u = userRepository.getById(idUser);
-        Wishlist wishlist =  u.getWishlist();
+        Product p = productRepository.findById(idProduct).get();
+        User u = userRepository.findById(idUser).get();
+        Wishlist wishlist =  getWishlistById(idUser);
         wishlist.getProdInWishlist().add(p);
         return wishlistRepository.save(wishlist);
     }
 
     public Wishlist removeProductFromWishlist(Long idUser, Long idProduct){
-        Product p = productRepository.getById(idProduct);
-        User u = userRepository.getById(idUser);
-        Wishlist wishlist =  u.getWishlist();
+        Product p = productRepository.findById(idProduct).get();
+        User u = userRepository.findById(idUser).get();
+        Wishlist wishlist =  getWishlistById(idUser);
         wishlist.getProdInWishlist().remove(p);
         return wishlistRepository.save(wishlist);
     }

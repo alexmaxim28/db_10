@@ -15,22 +15,33 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping("/carts")
-    public List<Cart> getAllUserCarts() { return cartService.getAllCarts(); }
+    public List<Cart> getAllUserCarts() {
+        return cartService.getAllCarts();
+    }
 
     @GetMapping("/carts/{id}")
-    public Cart getCartById(@PathVariable Long id) { return cartService.getCartById(id); }
+    public Cart getCartById(@PathVariable Long id) {
+        return cartService.getCartById(id);
+    }
 
     @DeleteMapping("/carts/delete/{id}")
     public String deleteCart(@PathVariable Long id) {
-        cartService.getCartById(id).setCartEntries(new ArrayList<CartEntry>());
+        cartService.removeCart(id);
         return "Cart is now empty.";
     }
 
     @PostMapping("/carts/addProduct/{idUser}/{idProduct}/{quantity}")
-    public String addProductInCart(@PathVariable Long idUser, @PathVariable Long idProduct, @PathVariable int quantity){
-        cartService.addProductInCart(idUser, idProduct, quantity);
-        return "Product added in cart.";
+    public Cart addProductInCart(@PathVariable Long idUser, @PathVariable Long idProduct, @PathVariable int quantity){
+        return cartService.addProductInCart(idUser, idProduct, quantity);
     }
 
-    @PostMapping("/carts/deleteProduct/{}")
+    @DeleteMapping("/carts/deleteProduct/{idUser}/{idProduct}")
+    public Cart deleteProductInCart(@PathVariable("idUser") Long idUser, @PathVariable("idProduct") Long idProduct){
+        return cartService.removeProductFromCart(idUser, idProduct);
+    }
+
+    @GetMapping("/getAllOrdersSorted")
+    public List<Cart> getAllOrdersSorted(){
+        return cartService.getAllOrdersSorted();
+    }
 }

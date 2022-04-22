@@ -5,10 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -16,7 +13,7 @@ import javax.persistence.ManyToOne;
 @AllArgsConstructor
 public class CartEntry {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
     private int quantity;
 
@@ -25,4 +22,8 @@ public class CartEntry {
     @ManyToOne
     @JsonIgnore
     private Cart cart;
+    @ManyToOne
+    @JsonIgnore
+    private Order order;
+
 }

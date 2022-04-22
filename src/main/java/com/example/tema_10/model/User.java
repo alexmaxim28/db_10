@@ -1,10 +1,14 @@
 package com.example.tema_10.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 @Entity(name = "Users")
@@ -13,15 +17,21 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
     private String name;
 
-    // Fiecare User poate avea un singur cart
     @OneToOne
-    Cart cart;
-
-    // Fiecare User poate avea un singur wishlist
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private Cart cart;
     @OneToOne
-    Wishlist wishlist;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    private Wishlist wishlist;
+    @OneToMany
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
+    @JoinColumn(name = "order_id")
+    private List<Order> orderHistory;
 }

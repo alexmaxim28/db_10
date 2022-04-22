@@ -1,24 +1,61 @@
 package com.example.tema_10.service;
 
+import com.example.tema_10.model.Cart;
 import com.example.tema_10.model.User;
+import com.example.tema_10.model.Wishlist;
+import com.example.tema_10.repository.CartRepository;
 import com.example.tema_10.repository.UserRepository;
+import com.example.tema_10.repository.WishlistRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final WishlistRepository wishlistRepository;
+    private final CartRepository cartRepository;
 
-    public User getUserById(Long id) { return userRepository.getById(id); }
+    public User getUserById(Long id) {
+        if(userRepository.findById(id).isPresent())
+            return userRepository.getById(id);
+        return null;
+    }
 
-    public List<User> getAllUsers() { return userRepository.findAll(); }
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 
-    public void addUser(User user) { userRepository.save(user); }
+    public User addUser(User user) {
+        Cart cart = new Cart();
+        cart.setCartEntries(new ArrayList<>());
+        cart.setUser(user);
+        Wishlist wishlist = new Wishlist();
+        wishlist.setProdInWishlist(new ArrayList<>());
+        wishlist.setUser(user);
+        user = userRepository.save(user);
+        wishlist = wishlistRepository.save(wishlist);
+        cart = cartRepository.save(cart);
+        user.setCart(cart);
+        user.setWishlist(wishlist);
 
-    public void removeUser(User user) { userRepository.delete(user); }
+        return user;
+    }
 
-    public void deleteUserById(Long id) { userRepository.delete(getUserById(id)); }
+    public String deleteUser(Long id) {
+        if(getUserById(id) != null){
+            userRepository.delete(getUserById(id));
+            return "User deleted";
+        }
+        return "User not found";
+    }
+
+    public String updateUser(User user){
+        deleteUser(user.getId());
+        addUser(user);
+        return "User updated";
+    }
 }

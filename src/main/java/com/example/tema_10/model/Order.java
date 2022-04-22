@@ -6,22 +6,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 
+@Entity(name = "order_history")
 @Data
-@Entity(name = "Products")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class Order {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private Float price;
 
     @OneToMany
-    @JsonIgnore
-    List<CartEntry> cartEntries;
+    private List<CartEntry> cartEntries;
 
+    @ManyToOne
+    @JsonIgnore
+    private User user;
 }

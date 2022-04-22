@@ -14,9 +14,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Cart {
+public class Cart implements Comparable<Cart>{
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -25,4 +25,19 @@ public class Cart {
     @OneToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
+
+    //Calculate how many products are in a order
+    public Integer numberOfProductsInOrder(){
+        Integer quantity = 0;
+        for(CartEntry product : cartEntries){
+            quantity+=product.getQuantity();
+        }
+        return quantity;
+    }
+
+    //compare to basec on how many products are in a order
+    @Override
+    public int compareTo(Cart o) {
+        return this.numberOfProductsInOrder()-o.numberOfProductsInOrder();
+    }
 }
